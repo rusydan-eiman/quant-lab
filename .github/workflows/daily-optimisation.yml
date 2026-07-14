@@ -1,9 +1,11 @@
 name: Daily Portfolio Optimisation
 
 on:
-  schedule:
-    # Run daily at 9:00 AM UTC (adjust timezone as needed)
-    - cron: '0 9 * * *'
+  # DISABLED 2026-07-14: schedule commented out (was failing daily).
+  # To re-enable the daily run, uncomment the schedule block below.
+  # schedule:
+  #   # Run daily at 9:00 AM UTC (adjust timezone as needed)
+  #   - cron: '0 9 * * *'
   workflow_dispatch:  # Allows manual triggering from GitHub UI
 
 jobs:
