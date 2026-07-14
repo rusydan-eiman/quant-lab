@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "Prophet-Forecasting-For-Portfolio-Optimisation"
+name = "quant-lab"
 version = "0.1.0"
-description = "Prophet-based stock price forecasting with Markowitz portfolio optimisation"
+description = "Quantitative trading experiments. Currently: Prophet forecasting + Markowitz allocation. Adding more techniques over time."
 authors = ["Rusydan Eiman <zaghrusydan@gmail.com>"]
 readme = "README.md"
 packages = [{include = "src"}]
