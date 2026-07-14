@@ -2,7 +2,9 @@
 
 A sandbox for **quantitative trading experiments**. Currently running **Prophet-based price forecasting** + **Markowitz portfolio optimisation**. Will grow as I learn more techniques.
 
-> ⚠️ **Not financial advice.** This is a learning project. Don't trade real money based on its output.
+> ⚠️ **PROJECT STATUS: NOT FINISHED.** This project is currently incomplete and under active development. It is **not recommended to run this system** as it has not been properly built, tested, or validated. Many components are placeholders, the Markowitz implementation contains a known bug, and the daily workflow has been disabled because it was failing. Use only for learning purposes.
+
+> ⚠️ **NOT FINANCIAL ADVICE.** This is a learning project. Don't trade real money based on its output.
 
 ## Current Pipeline
 
