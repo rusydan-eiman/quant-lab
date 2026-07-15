@@ -12,7 +12,7 @@ def calculate_mean_variance(
     lookback_days: int = 252,  # ~1 year of trading days
 ) -> tuple[pd.Series, pd.DataFrame]:
     """
-    Calculate mean returns and covariance matrix from Returns columns.
+    Calculate covariance matrix from Returns columns.
 
     Uses only the last N trading days (default: 252 days / ~1 year) of data.
 
@@ -24,8 +24,14 @@ def calculate_mean_variance(
 
     Returns:
         Tuple containing:
-        - mean_returns: pd.Series of mean returns for each ticker, indexed by ticker
+        - mean_returns: pd.Series of historical mean returns (kept for backward
+            compatibility, but NOT used by the optimiser — see optimize_portfolio)
         - cov_matrix: pd.DataFrame covariance matrix of returns across all tickers
+
+    Note:
+        The mean_returns returned here are HISTORICAL actual returns. For
+        portfolio optimization, use the predicted returns from Prophet instead
+        (passed as predicted_returns to optimize_portfolio_mean_variance).
     """
     # For each ticker, take the last N days
     filtered_data = {}
@@ -50,15 +56,23 @@ def calculate_mean_variance(
 
 def optimize_portfolio_mean_variance(
     data_dict: dict[str, pd.DataFrame],
+    predicted_returns: dict[str, float],
     minimum_allocation: float = MINIMUM_ALLOCATION,
     maximum_allocation: float = MAXIMUM_ALLOCATION,
     risk_aversion: float = RISK_AVERSION,
 ) -> dict[str, float]:
     """
-    Optimise portfolio using mean-variance (maximise return - risk_penalty).
+    Optimise portfolio using mean-variance.
+
+    Uses Prophet's predicted returns as expected returns (mu) and historical
+    covariance for risk. This is the FIX for the previous bug where historical
+    mean returns were incorrectly used as expected returns.
 
     Args:
         data_dict: Dictionary of DataFrames with 'Returns' column
+            (used only for covariance matrix calculation)
+        predicted_returns: Dictionary mapping ticker -> Prophet-predicted next-step
+            return. THIS is the expected return (mu) used in optimisation.
         minimum_allocation: Minimum allocation for each asset (default: MINIMUM_ALLOCATION)
         maximum_allocation: Maximum allocation for each asset (default: MAXIMUM_ALLOCATION)
         risk_aversion: Risk-aversion coefficient (lambda) (default: RISK_AVERSION)
@@ -67,13 +81,41 @@ def optimize_portfolio_mean_variance(
         Dictionary mapping ticker to optimal weight, where weights sum to 1.0
 
     Raises:
-        ValueError: If optimisation fails
+        ValueError: If optimisation fails, or if predicted_returns is missing
+            tickers that exist in data_dict
+
+    Note:
+        Previous bug (fixed 2026-07-15):
+        - Old code used calculate_mean_variance() which returned historical mean
+          returns and called them "expected returns"
+        - This was wrong: historical mean != predicted future return
+        - Fix: predicted_returns parameter is now REQUIRED, used as mu
+        - Covariance still comes from historical data (good estimate of risk)
     """
-    mu, cov = calculate_mean_variance(data_dict)
+    if not predicted_returns:
+        raise ValueError(
+            "predicted_returns is required. Pass the output of model.predict_for_tickers()."
+        )
+
+    # Validate ticker alignment
     tickers = list(data_dict.keys())
+    missing = [t for t in tickers if t not in predicted_returns]
+    if missing:
+        raise ValueError(f"predicted_returns missing tickers: {missing}")
+
+    # Calculate covariance from historical data (risk estimate)
+    _, cov = calculate_mean_variance(data_dict)
+
+    # Build mu vector from PREDICTED returns (not historical)
+    # This is the fix: use Prophet's predictions, not historical mean
+    mu = pd.Series(
+        {ticker: float(predicted_returns[ticker]) for ticker in tickers},
+        index=tickers,
+    )
+
     num_assets = len(tickers)
 
-    # Objective: maximise return - (lambda/2) * variance
+    # Objective: maximise expected return - (lambda/2) * variance
     # minimise negative of it
     def objective(weights: np.ndarray) -> float:
         port_return = float(np.dot(weights, mu))

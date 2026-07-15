@@ -72,7 +72,7 @@ def run_optimisation(
 
     # 6. Optimise portfolio using predicted returns as expected returns
     logger.info("Calculating optimal portfolio allocation...")
-    weights_dict = optimize_portfolio_mean_variance(predicted_data)
+    weights_dict = optimize_portfolio_mean_variance(predicted_data, predicted_returns)
 
     # 7. Log results
     logger.info("Portfolio Optimisation Results")
