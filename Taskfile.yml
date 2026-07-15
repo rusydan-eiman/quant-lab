@@ -1,0 +1,107 @@
+# Taskfile for quant-lab
+# Install: https://taskfile.dev/installation/
+# Run:     task (lists tasks), task test, task run, etc.
+# Replaces: Makefile (faster, modern, cross-platform)
+
+version: "3"
+
+vars:
+  PYTHON: python
+  SRC: src
+  TESTS: tests
+
+tasks:
+  default:
+    desc: List all available tasks
+    cmds:
+      - task --list
+
+  # --- Setup ---
+  install:
+    desc: Install dependencies (production only)
+    cmds:
+      - poetry install --no-dev
+
+  install-dev:
+    desc: Install all dependencies (dev + production)
+    cmds:
+      - poetry install
+
+  # --- Run ---
+  run:
+    desc: Run portfolio optimisation for today
+    cmds:
+      - poetry run python -m src.main
+
+  dashboard:
+    desc: Launch the Streamlit dashboard
+    cmds:
+      - poetry run streamlit run src/streamlit_app.py
+
+  # --- Test ---
+  test:
+    desc: Run all tests
+    cmds:
+      - poetry run pytest {{.TESTS}}
+
+  test-fast:
+    desc: Run tests without coverage (faster)
+    cmds:
+      - poetry run pytest {{.TESTS}} -o addopts=
+
+  test-verbose:
+    desc: Run tests with verbose output
+    cmds:
+      - poetry run pytest {{.TESTS}} -v
+
+  # --- Quality ---
+  format:
+    desc: Auto-format code with black + ruff
+    cmds:
+      - poetry run black {{.SRC}} {{.TESTS}}
+      - poetry run ruff check --fix {{.SRC}} {{.TESTS}}
+
+  lint:
+    desc: Check code style (no changes)
+    cmds:
+      - poetry run ruff check {{.SRC}} {{.TESTS}}
+      - poetry run black --check {{.SRC}} {{.TESTS}}
+
+  type-check:
+    desc: Run mypy type checker
+    cmds:
+      - poetry run mypy {{.SRC}}
+
+  # --- All-in-one ---
+  check:
+    desc: Run all quality checks (lint + types + tests)
+    deps: [lint, type-check, test]
+
+  clean:
+    desc: Remove build artifacts and caches
+    cmds:
+      - find . -type d -name __pycache__ -exec rm -rf {} +
+      - find . -type d -name .pytest_cache -exec rm -rf {} +
+      - find . -type d -name .mypy_cache -exec rm -rf {} +
+      - find . -type d -name .ruff_cache -exec rm -rf {} +
+      - find . -type d -name htmlcov -exec rm -rf {} +
+      - rm -f .coverage
+
+  # --- Stats ---
+  stats:
+    desc: "Show code statistics (requires cloc, install via pip install cloc)"
+    cmds:
+      - cloc {{.SRC}}
+
+  # --- Deploy ---
+  deploy-disable:
+    desc: "Disable the daily GitHub Action (use if failing)"
+    cmds:
+      - echo "See .github/workflows/daily-optimisation.yml"
+      - echo "Comment out the schedule block"
+
+  deploy-enable:
+    desc: "Re-enable the daily GitHub Action"
+    cmds:
+      - echo "See .github/workflows/daily-optimisation.yml"
+      - echo "Uncomment the schedule block"

@@ -7,32 +7,31 @@ readme = "README.md"
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.12"
-numpy = "^1.24.0"
-pandas = "^2.0.0"
-scipy = "^1.11.0"
-yfinance = "^0.2.28"
-scikit-learn = "^1.3.0"
-matplotlib = "^3.7.0"
-seaborn = "^0.12.0"
-jupyter = "^1.0.0"
-ipykernel = "^6.25.0"
-prophet = "^1.1.5"
-supabase = "^2.23.0"
-streamlit = "^1.28.0"
-pandas-market-calendars = "^5.1.3"
-plotly = "^6.4.0"
-altair = "^5.5.0"
+python = ">=3.11,<3.15"  # Allow 3.11, 3.12, 3.13, 3.14. We tested on 3.13.
+numpy = ">=1.24.0,<3.0"
+pandas = ">=2.0.0,<3.0"
+scipy = ">=1.11.0,<2.0"
+yfinance = ">=0.2.28,<0.3"
+scikit-learn = ">=1.3.0,<2.0"  # For future ML strategies
+matplotlib = ">=3.7.0,<4.0"  # For backtest visualization
+seaborn = ">=0.12.0,<2.0"  # Statistical plotting
+jupyter = ">=1.0.0,<2.0"  # Dev environment
+ipykernel = ">=6.25.0,<7.0"  # For Jupyter
+prophet = ">=1.1.5,<2.0"
+supabase = ">=2.23.0,<3.0"
+streamlit = ">=1.28.0,<2.0"
+pandas-market-calendars = ">=5.1.0,<6.0"
+plotly = ">=6.4.0,<7.0"
+altair = ">=5.5.0,<6.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
-pytest-cov = "^4.1.0"
-pytest-mock = "^3.11.0"
-black = "^23.7.0"
-ruff = "^0.0.285"
-mypy = "^1.5.0"
-pre-commit = "^3.4.0"
-
+pytest = ">=7.4.0,<9.0"
+pytest-cov = ">=4.1.0,<6.0"
+pytest-mock = ">=3.11.0,<4.0"
+black = ">=23.7.0,<26.0"
+ruff = ">=0.0.285,<2.0"
+mypy = ">=1.5.0,<2.0"
+pre-commit = ">=3.4.0,<5.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -40,12 +39,12 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 100
-target-version = ['py311', 'py312']
+target-version = ['py311', 'py312', 'py313']
 include = '\.pyi?$'
 
 [tool.ruff]
+target-version = "py311"
 line-length = 100
-target-version = "py312"
 select = [
     "E",  # pycodestyle errors
     "W",  # pycodestyle warnings
@@ -59,9 +58,8 @@ ignore = [
     "E501",  # line too long (handled by black)
 ]
 
-
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false
@@ -73,9 +71,5 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = [
-    "--cov=src",
-    "--cov-report=term-missing",
-    "--cov-report=html",
     "--strict-markers",
 ]
-
