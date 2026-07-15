@@ -97,8 +97,7 @@ make check         # format + lint + type-check + test
 
 ## Known Issues
 
-- The previous "daily optimisation" GitHub Action was disabled because it was failing daily (missing Supabase secrets). Manual runs via `workflow_dispatch` still work.
-- ~~The Markowitz implementation uses historical actual returns instead of Prophet's predictions~~ **FIXED 2026-07-15** (commit `19b2ca8`). `optimize_portfolio_mean_variance` now requires `predicted_returns` and uses Prophet's predictions as expected returns; historical data only feeds the covariance.
+Tracked in [GitHub Issues](https://github.com/rusydan-eiman/quant-lab/issues) (21 open issues, P0–P3 priority).
 
 ## Project Structure
 
