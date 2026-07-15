@@ -2,7 +2,7 @@
 
 A sandbox for **quantitative trading experiments**. Currently running **Prophet-based price forecasting** + **Markowitz portfolio optimisation**. Will grow as I learn more techniques.
 
-> ⚠️ **PROJECT STATUS: NOT FINISHED.** This project is currently incomplete and under active development. It is **not recommended to run this system** as it has not been properly built, tested, or validated. Many components are placeholders, the Markowitz implementation contains a known bug, and the daily workflow has been disabled because it was failing. Use only for learning purposes.
+> ⚠️ **PROJECT STATUS: NOT FINISHED.** This project is currently incomplete and under active development. It is **not recommended to run this system** as it has not been properly built, tested, or validated. Many components are placeholders, and the daily workflow has been disabled because it was failing. Use only for learning purposes.
 
 > ⚠️ **NOT FINANCIAL ADVICE.** This is a learning project. Don't trade real money based on its output.
 
@@ -98,7 +98,7 @@ make check         # format + lint + type-check + test
 ## Known Issues
 
 - The previous "daily optimisation" GitHub Action was disabled because it was failing daily (missing Supabase secrets). Manual runs via `workflow_dispatch` still work.
-- The Markowitz implementation uses historical actual returns instead of Prophet's predictions in some code paths. See `src/optimiser.py:calculate_mean_variance` — this is a known bug, will fix when adding the backtesting framework.
+- ~~The Markowitz implementation uses historical actual returns instead of Prophet's predictions~~ **FIXED 2026-07-15** (commit `19b2ca8`). `optimize_portfolio_mean_variance` now requires `predicted_returns` and uses Prophet's predictions as expected returns; historical data only feeds the covariance.
 
 ## Project Structure
 
