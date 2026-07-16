@@ -1,9 +1,16 @@
-"""Data extraction module for fetching stock data from yfinance."""
+"""Data extraction module for fetching stock data.
+
+Currently uses yfinance (free, unreliable — Yahoo TOS issues, rate limits,
+data corrections, survivorship bias). Future plan: migrate to EODHD (paid,
+real REST API, stable historical data, fundamentals, news feed).
+
+See issue #22 (TBD): Migrate data layer from yfinance to EODHD.
+"""
 
 import logging
 
 import pandas as pd
-import yfinance as yf
+import yfinance as yf  # TODO(issue #22): replace with EODHD API client
 
 from .settings import END_DATE, START_DATE
 
@@ -47,8 +54,8 @@ def _extract_single_ticker_data(ticker: str, start_date: str, end_date: str) -> 
         Processed DataFrame or None if extraction fails
     """
     try:
-        stock = yf.Ticker(ticker)
-        df = stock.history(start=start_date, end=end_date)
+        stock = yf.Ticker(ticker)  # TODO(issue #22): replace with EODHD REST client
+        df = stock.history(start=start_date, end=end_date)  # TODO(issue #22): use EODHD /eod/{ticker} endpoint
         df_processed = _process_ticker_dataframe(df)
 
         if df.empty:

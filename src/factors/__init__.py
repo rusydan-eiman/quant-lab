@@ -354,10 +354,15 @@ def factors_from_yfinance(
     momentum_skip_days: int = DEFAULT_MOMENTUM_SKIP_DAYS,
     yfinance_factory: Callable[[str], object] | None = None,
 ) -> FactorScores:
-    """Convenience: compute all four factors in one call using yfinance.
+    """Compute all four factors in one call using yfinance.
 
     This is the optional "production" path that talks to Yahoo Finance. The
     core factor functions (compute_*) are pure and don't touch the network.
+
+    .. deprecated::
+        yfinance is unreliable and scheduled to be removed. Use
+        factors_from_eodhd() once EODHD account is active (TODO issue #22).
+        The yfinance path is kept for development only; do not use in production.
 
     Args:
         tickers: List of ticker symbols.
